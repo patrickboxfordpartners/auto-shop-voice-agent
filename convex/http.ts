@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 
 const http = httpRouter();
 
@@ -276,10 +277,10 @@ http.route({
       );
     }
     await ctx.runMutation(api.appointments.saveDiagnosticNotes, {
-      appointmentId: body.appointmentId as never,
+      appointmentId: body.appointmentId as Id<"appointments">,
       diagnosticNotes: (body.diagnosticNotes as string) ?? "",
-      reportedSymptoms: body.reportedSymptoms as never,
-      obdCodes: body.obdCodes as never,
+      reportedSymptoms: body.reportedSymptoms as Array<{ symptom: string; detail: string }> | undefined,
+      obdCodes: body.obdCodes as Array<{ code: string; description: string; urgency: string; causes: string[]; notes: string }> | undefined,
     });
     return new Response(
       JSON.stringify({ success: true }),
@@ -314,7 +315,7 @@ http.route({
     }
 
     const result = await ctx.runMutation(api.orders.autoReorderLowStock, {
-      appointmentId: body.appointmentId as string | undefined,
+      appointmentId: body.appointmentId as Id<"appointments"> | undefined,
     });
 
     return new Response(
@@ -359,7 +360,7 @@ http.route({
     // Mark failed if the run didn't succeed
     if (eventType && eventType !== "ACTOR.RUN.SUCCEEDED") {
       await ctx.runMutation(api.appointments.updatePartsEnrichment, {
-        appointmentId: apptId as never,
+        appointmentId: apptId as Id<"appointments">,
         enrichmentStatus: "failed",
       });
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders() });
@@ -367,7 +368,7 @@ http.route({
 
     if (!datasetId) {
       await ctx.runMutation(api.appointments.updatePartsEnrichment, {
-        appointmentId: apptId as never,
+        appointmentId: apptId as Id<"appointments">,
         enrichmentStatus: "failed",
       });
       return new Response(
@@ -391,7 +392,7 @@ http.route({
     } catch {
       // Dataset fetch failed — mark as failed and move on
       await ctx.runMutation(api.appointments.updatePartsEnrichment, {
-        appointmentId: apptId as never,
+        appointmentId: apptId as Id<"appointments">,
         enrichmentStatus: "failed",
       });
       return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders() });
@@ -464,7 +465,7 @@ http.route({
     }
 
     await ctx.runMutation(api.appointments.updatePartsEnrichment, {
-      appointmentId: apptId as never,
+      appointmentId: apptId as Id<"appointments">,
       enrichmentStatus: enriched.length > 0 ? "complete" : "failed",
       partsEnrichment: enriched,
     });
