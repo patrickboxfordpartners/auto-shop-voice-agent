@@ -24,6 +24,10 @@ __pycache__/
 .venv/
 venv/
 
+# smallest.ai CLI config (contains agent ID, stored per-machine)
+.smallestai/
+agent/.smallestai/
+
 # OS
 .DS_Store
 

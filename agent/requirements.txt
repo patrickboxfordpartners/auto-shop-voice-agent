@@ -1,3 +1,7 @@
+# Requires Python 3.10+ (for smallest.ai CLI; agent code itself runs on 3.9+)
+# Install: pip install -r requirements.txt
+# CLI:     pip install smallestai  (also installs this)
+
 smallestai>=4.3.0
 httpx
 dateparser
