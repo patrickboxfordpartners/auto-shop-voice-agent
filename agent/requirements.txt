@@ -1,0 +1,5 @@
+smallestai>=4.3.0
+httpx
+dateparser
+python-dotenv
+loguru

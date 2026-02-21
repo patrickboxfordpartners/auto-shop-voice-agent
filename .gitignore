@@ -1,0 +1,32 @@
+# Environment — never commit secrets
+.env
+.env.local
+.env.*.local
+agent/.env
+
+# Convex generated
+convex/_generated/
+dashboard/convex/_generated/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Next.js
+dashboard/.next/
+dashboard/out/
+dashboard/node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
