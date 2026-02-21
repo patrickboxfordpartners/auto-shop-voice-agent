@@ -1,12 +1,22 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { AlertTriangle, Package, Loader2, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Package, CheckCircle2 } from "lucide-react";
 
-export function InventoryCard() {
-  const lowStockParts = useQuery(api.parts.getPartsNeedingReorder);
+export interface LowStockPart {
+  id: string;
+  partNumber: string;
+  partName: string;
+  currentStock: number;
+  minStock: number;
+  maxStock: number;
+  retailPrice: number;
+}
 
+interface InventoryCardProps {
+  parts: LowStockPart[];
+}
+
+export function InventoryCard({ parts }: InventoryCardProps) {
   return (
     <div className="flex flex-col rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -17,29 +27,26 @@ export function InventoryCard() {
           </h2>
         </div>
         <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">
-          {lowStockParts === undefined ? "..." : lowStockParts.length}
+          {parts.length}
         </span>
       </div>
       <div className="flex flex-col divide-y divide-border">
-        {lowStockParts === undefined ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : lowStockParts.length === 0 ? (
+        {parts.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-muted-foreground">
             <CheckCircle2 className="h-8 w-8" />
             <p className="text-sm">All parts are stocked</p>
           </div>
         ) : (
-          lowStockParts.map((part) => {
+          parts.map((part) => {
             const stockPercent = Math.round(
               (part.currentStock / part.maxStock) * 100
             );
-            const isVeryLow = part.currentStock <= Math.floor(part.minStock / 2);
+            const isVeryLow =
+              part.currentStock <= Math.floor(part.minStock / 2);
 
             return (
               <div
-                key={part._id}
+                key={part.id}
                 className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-muted/50"
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-secondary">
@@ -65,6 +72,11 @@ export function InventoryCard() {
                           isVeryLow ? "bg-destructive" : "bg-amber-400"
                         }`}
                         style={{ width: `${Math.max(stockPercent, 3)}%` }}
+                        role="progressbar"
+                        aria-valuenow={part.currentStock}
+                        aria-valuemin={0}
+                        aria-valuemax={part.maxStock}
+                        aria-label={`${part.partName} stock level`}
                       />
                     </div>
                     <span className="shrink-0 text-[10px] text-muted-foreground">

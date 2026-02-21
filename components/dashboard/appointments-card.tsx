@@ -1,28 +1,35 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import {
   Calendar,
   Car,
   Clock,
   Wrench,
   CheckCircle2,
-  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export interface Appointment {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  vehicleYear: number;
+  vehicleMake: string;
+  vehicleModel: string;
+  serviceType: string;
+  serviceDescription: string;
+  scheduledDate: string;
+  scheduledTime: string;
+  status: string;
+  estimatedDuration: number;
+}
+
 const statusStyles: Record<string, string> = {
-  scheduled:
-    "bg-primary/10 text-primary border border-primary/20",
-  confirmed:
-    "bg-primary/15 text-primary border border-primary/30",
-  in_progress:
-    "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  completed:
-    "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  cancelled:
-    "bg-destructive/10 text-destructive border border-destructive/20",
+  scheduled: "bg-primary/10 text-primary border border-primary/20",
+  confirmed: "bg-primary/15 text-primary border border-primary/30",
+  in_progress: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  completed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  cancelled: "bg-destructive/10 text-destructive border border-destructive/20",
 };
 
 const serviceIcons: Record<string, typeof Wrench> = {
@@ -48,12 +55,11 @@ function formatServiceType(type: string) {
     .join(" ");
 }
 
-export function AppointmentsCard() {
-  const today = new Date().toISOString().split("T")[0];
-  const appointments = useQuery(api.appointments.getAppointmentsByDate, {
-    date: today,
-  });
+interface AppointmentsCardProps {
+  appointments: Appointment[];
+}
 
+export function AppointmentsCard({ appointments }: AppointmentsCardProps) {
   return (
     <div className="flex flex-col rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -64,26 +70,21 @@ export function AppointmentsCard() {
           </h2>
         </div>
         <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-          {appointments === undefined ? "..." : appointments.length}
+          {appointments.length}
         </span>
       </div>
       <div className="flex flex-col divide-y divide-border">
-        {appointments === undefined ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : appointments.length === 0 ? (
+        {appointments.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-muted-foreground">
             <CheckCircle2 className="h-8 w-8" />
             <p className="text-sm">No appointments today</p>
           </div>
         ) : (
           appointments.map((apt) => {
-            const ServiceIcon =
-              serviceIcons[apt.serviceType] || Wrench;
+            const ServiceIcon = serviceIcons[apt.serviceType] || Wrench;
             return (
               <div
-                key={apt._id}
+                key={apt.id}
                 className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-muted/50"
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-secondary">

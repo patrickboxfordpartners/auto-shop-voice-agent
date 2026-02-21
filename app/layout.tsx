@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ConvexClientProvider } from "@/components/convex-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mike's Auto Shop Dashboard",
+  title: "Mike's Auto Shop - Dashboard",
   description:
-    "Real-time auto shop management dashboard with voice AI agent integration",
+    "Voice AI-powered auto repair shop dashboard. View appointments, inventory, and vendor orders in real-time.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1a1d2e",
+  themeColor: "#0a0c14",
 };
 
 export default function RootLayout({
@@ -33,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        {children}
       </body>
     </html>
   );
